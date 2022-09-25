@@ -1,30 +1,3 @@
-
-Skip to content
-
-    Pricing
-
-Sign in
-Sign up
-KevinLu19 /
-Cli_Tree
-Public
-
-Code
-Issues
-Pull requests
-Actions
-Projects
-Security
-
-    Insights
-
-Cli_Tree/.gitignore
-@KevinLu19
-KevinLu19 printed the version number from the cli
-Latest commit 092e9df on May 2
-History
-1 contributor
-125 lines (102 sloc) 1.68 KB
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -155,3 +128,5 @@ venv/
 __pycache__/
 geckodriver.exe
 */.exe
+
+*/.xpi
