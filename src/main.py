@@ -4,7 +4,7 @@ import playlist
 
 def main():
     selenium_driver = SeleniumDriver()
-    music_playlist = playlist.Playlist()
+    # music_playlist = playlist.Playlist()
 
 if __name__ == "__main__":
     main()
