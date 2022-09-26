@@ -5,15 +5,28 @@ import random
 # Data Structure - Queue
 class Playlist:
     def __init__(self):
-        self.queue_collection = []
+        self.queue_collection = set()
         self.front_data = 0          # First element of the queue.
         self.size = 0                # Current elements inside of the list.
 
     def add_entry(self, music_url):
-        if music_url is None:
-            pass
+        try:
+            self.queue_collection.add(music_url)
+            print(f"Added {music_url} to the collection.")
+        except BaseException as e:
+            print(e)
 
-        self.queue_collection.append(music_url)
+    def print_collection(self):
+        print(self.queue_collection)
+
+    def remove_current_music_entry(self):
+        if None in self.queue_collection:
+            self.update_playlist()
+    
+    def update_playlist(self):
+        self.queue_collection = [music_url for music_url in self.queue_collection if music_url is not None]
+
+        return self.queue_collection
 
     def is_empty(self):
         return self.size == True
