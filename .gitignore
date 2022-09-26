@@ -130,3 +130,10 @@ geckodriver.exe
 */.exe
 
 */.xpi
+uBlock0@raymondhill.net.xpi
+
+*/.db
+database.db
+
+*/.txt
+notes.txt
