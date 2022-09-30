@@ -1,6 +1,7 @@
 from queue import Empty
 
 import random
+import database
 
 # Data Structure - Queue
 class Playlist:
@@ -8,6 +9,8 @@ class Playlist:
         self.queue_collection = set()
         self.front_data = 0          # First element of the queue.
         self.size = 0                # Current elements inside of the list.
+
+        self.sqlite3_database = database.Database()
 
     def add_entry(self, music_url):
         try:
@@ -17,7 +20,7 @@ class Playlist:
             print(e)
 
     def print_collection(self):
-        print(self.queue_collection)
+        self.sqlite3_database.fetch_entry()
 
     def remove_current_music_entry(self):
         if None in self.queue_collection:

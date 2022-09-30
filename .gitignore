@@ -137,3 +137,5 @@ database.db
 
 */.txt
 notes.txt
+
+credentials.py
