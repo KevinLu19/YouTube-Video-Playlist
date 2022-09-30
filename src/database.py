@@ -19,6 +19,7 @@
 #         self.cursor.fetchall()
 
 import mysql.connector
+from credentials import PASSWORD
 
 class Database:
     def __init__(self):
