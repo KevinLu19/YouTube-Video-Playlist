@@ -10,7 +10,8 @@ class Playlist:
         self.front_data = 0          # First element of the queue.
         self.size = 0                # Current elements inside of the list.
 
-        self.sqlite3_database = database.Database()
+        # self.sqlite3_database = database.Database()
+        self.mysql_database = database.Database()
 
     def add_entry(self, music_url):
         try:

@@ -26,7 +26,7 @@ from credentials import PASSWORD
 class Database:
     def __init__(self):
         try:
-            self.conn = mysql.connector.connect(user="root", password="", host="127.0.0.1", database="Music")
+            self.conn = mysql.connector.connect(user="root", password=f"{PASSWORD}", host="127.0.0.1", database="Music")
         except mysql.connector.Error as err:
             if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 print("Something is wrong with your user name or password")
