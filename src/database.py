@@ -1,41 +1,61 @@
-# import sqlite3
-
-# class Database:
-#     def __init__(self):
-#         self.conn = sqlite3.connect("database.db")
-#         self.cursor = self.conn.cursor()
-#         self.cursor.execute("CREATE TABLE IF NOT EXISTS music(music_urls, titles);")
-        
-#         try:
-#             self.cursor.execute("create unique index qnu_music_2 on music(music_urls, titles);")
-#         except sqlite3.OperationalError as e:
-#             print (e)
-
-#     def add_entry(self, music_url, music_title):
-#         self.add = self.cursor.execute(f"INSERT OR IGNORE INTO music (music_urls, titles) VALUES(?, ?)", (music_url, music_title))
-#         self.conn.commit()
-
-#     def fetch_entry(self):
-#         self.cursor.fetchall()
-
-import mysql.connector
 from mysql.connector import errorcode
 
-from credentials import PASSWORD
+import mysql.connector
+import os, sys, inspect
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir) 
+
 
 class Database:
     def __init__(self):
+        self.conn = mysql.connector.connect(host="localhost", user="root", password=f"{os.environ.get('DATABASE_PASSWORD')}", database="music")
+        print("Logged into the database.")
+        print("---------------------")
+
+        self.cursor = self.conn.cursor()
+
         try:
-            self.conn = mysql.connector.connect(user="root", password=f"{PASSWORD}", host="127.0.0.1", database="Music")
+            SQL_COMMAND = "CREATE TABLE IF NOT EXISTS musics (Url VARCHAR(255), Title varchar(255))"
+            self.cursor.execute(SQL_COMMAND)
+
         except mysql.connector.Error as err:
-            if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-                print("Something is wrong with your user name or password")
-            elif err.errno == errorcode.ER_BAD_DB_ERROR:
-                print("Database does not exist")
+            if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                print("Already exists.")
             else:
-                print(err)
-        else:
-            self.__exit__()
+                print(err.msg)
+
+    def add_entry(self, music_url, music_title):
+        SQL_COMMAND = f"INSERT IGNORE INTO musics(Url, Title) VALUES('{music_url}', '{music_title}');"
+
+        try:
+            self.cursor.execute(SQL_COMMAND)
+            print("Added value into the table.")
+
+            self.conn.commit()
+        except mysql.connector.Error as err:
+            print(err.msg)
+            self.conn.rollback()
+        
+    def add_unique_identifier_to_column(self):
+        SQL_COMMAND = "ALTER TABLE musics ADD UNIQUE INDEX(url)"
+        self.cursor.execute(SQL_COMMAND)
+
+    def fetch_entry(self):
+        SQL_COMMAND = "SELECT * FROM musics;"
+
+        self.cursor.execute(SQL_COMMAND)
+        
+        return self.cursor.fetchall()
+
+    def __drop_table(self):
+        try:
+            self.cursor.execute("DROP TABLE musics")
+            print("Successfully dropped table Musics.")
+        except mysql.connector.Error as err:
+            print(err.msg)
 
     def __exit__(self):
-        self.conn.close()
+        if self.conn is not None and self.conn.is_connected():
+            self.conn.close()
