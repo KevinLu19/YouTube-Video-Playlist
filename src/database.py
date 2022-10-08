@@ -7,6 +7,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir) 
 
+import youtube
 
 class Database:
     def __init__(self):
@@ -26,7 +27,18 @@ class Database:
             else:
                 print(err.msg)
 
-    def add_entry(self, music_url, music_title):
+    def get_title_and_url_from_youtube(self):
+        youtube_obj = youtube.YouTubeSearch()
+        music_title = youtube_obj.get_music_title()
+        music_url = youtube_obj.get_music_url()
+
+        return (music_title, music_url)
+
+    def __add_entry(self, music_url, music_title):
+        video_meta_data = self.get_title_and_url_from_youtube()
+        music_url = video_meta_data[1]
+        music_title = video_meta_data[0]
+
         SQL_COMMAND = f"INSERT IGNORE INTO musics(Url, Title) VALUES('{music_url}', '{music_title}');"
 
         try:
@@ -42,11 +54,18 @@ class Database:
         SQL_COMMAND = "ALTER TABLE musics ADD UNIQUE INDEX(url)"
         self.cursor.execute(SQL_COMMAND)
 
-    def fetch_entry(self):
-        SQL_COMMAND = "SELECT * FROM musics;"
+    def fetch_music_url(self):
+        SQL_COMMAND = "SELECT Url FROM musics;"
 
         self.cursor.execute(SQL_COMMAND)
         
+        return self.cursor.fetchall()
+
+    def fetch_music_title(self):
+        SQL_COMMAND  = "SELECT Title FROM musics;"
+
+        self.cursor.execute(SQL_COMMAND)
+
         return self.cursor.fetchall()
 
     def __drop_table(self):

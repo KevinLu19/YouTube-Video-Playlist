@@ -1,57 +1,58 @@
 from queue import Empty
+from collections import deque
 
 import random
 import database
 
 # Data Structure - Queue
 class Playlist:
+    MAX_SIZE = 100
+
     def __init__(self):
         self.queue_collection = set()
         self.front_data = 0          # First element of the queue.
         self.size = 0                # Current elements inside of the list.
 
-        # self.sqlite3_database = database.Database()
-        self.mysql_database = database.Database()
-
-    def add_entry(self, music_url):
+        self._queue = deque(maxlen=self.MAX_SIZE)
+        
+        self._mysql_database = database.Database()
         try:
-            self.queue_collection.add(music_url)
-            print(f"Added {music_url} to the collection.")
-        except BaseException as e:
+            # self._music_title = self._mysql_database.fetch_music_title()
+            self._music_url = self._mysql_database.fetch_music_url()
+            
+        except BaseException as e: 
             print(e)
 
-    def print_collection(self):
-        self.sqlite3_database.fetch_entry()
+        self.enqueue_music_url()
+       
 
-    def remove_current_music_entry(self):
-        if None in self.queue_collection:
-            self.update_playlist()
-    
-    def update_playlist(self):
-        self.queue_collection = [music_url for music_url in self.queue_collection if music_url is not None]
+    def enqueue_music_url(self):
+        return self._queue.append(self._music_url) 
 
-        return self.queue_collection
+    def dequeue_music_url(self):
+        deque_url = [url[0] for url in self._queue.pop()]
 
-    def is_empty(self):
-        return self.size == True
-
-    def first_element(self):
-        if self.is_empty:
-            raise Empty("Problem retrieving first element. Could be queue is empty.")
-        
-        return self.queue_collection[self.front_data]
-
-    def dequeue(self):
-        if self.is_empty:
-            raise Empty("Queue is empty.")
-
-        first_dequeue_data = self.queue_collection[self.front_data]
-        self.queue_collection[self.front_data] = None               # House keeping. Garbage Collection.
-        self.front_data = (self.front_data + 1) % len(self.queue_collection)
-        self.size -= 1
-
-        return first_dequeue_data
+        return deque_url[0]
 
     def shuffle_queue(self):
-        return random.shuffle(self.queue_collection)
+        return random.shuffle(self._queue)
+
+    # def enqueue_music_title(self):
+    #     return self._queue.append(self._music_title)
+
+    # def dequeue_music_title(self):
+    #     deque_title = [url[0] for url in self._queue.pop()]
+
+    #     return deque_title[0]
+
+    def print_current_song_title(self):
+        return self._music_title
+    
+    def print_queue_pop(self):
+        print(self._queue.pop())
+
+if __name__ == "__main__":
+    playlist = Playlist()
+    print(playlist.dequeue_music_url())
+    # print(playlist.dequeue_music_title())
     
