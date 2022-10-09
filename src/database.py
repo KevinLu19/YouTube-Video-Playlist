@@ -26,6 +26,17 @@ class Database:
                 print("Already exists.")
             else:
                 print(err.msg)
+    
+    # ----------------------------------------
+    # Public Methods
+    # ----------------------------------------
+    
+    def user_input_handler(self, song_name):
+        song_meta_data = self.get_title_and_url_from_youtube(song_name)
+        song_title = song_meta_data[0]
+        song_url = song_meta_data[1]
+
+        self.__add_entry(song_title, song_url)
 
     def get_title_and_url_from_youtube(self):
         youtube_obj = youtube.YouTubeSearch()
@@ -33,27 +44,7 @@ class Database:
         music_url = youtube_obj.get_music_url()
 
         return (music_title, music_url)
-
-    def __add_entry(self, music_url, music_title):
-        video_meta_data = self.get_title_and_url_from_youtube()
-        music_url = video_meta_data[1]
-        music_title = video_meta_data[0]
-
-        SQL_COMMAND = f"INSERT IGNORE INTO musics(Url, Title) VALUES('{music_url}', '{music_title}');"
-
-        try:
-            self.cursor.execute(SQL_COMMAND)
-            print("Added value into the table.")
-
-            self.conn.commit()
-        except mysql.connector.Error as err:
-            print(err.msg)
-            self.conn.rollback()
         
-    def add_unique_identifier_to_column(self):
-        SQL_COMMAND = "ALTER TABLE musics ADD UNIQUE INDEX(url)"
-        self.cursor.execute(SQL_COMMAND)
-
     def fetch_music_url(self):
         SQL_COMMAND = "SELECT Url FROM musics;"
 
@@ -61,13 +52,36 @@ class Database:
         
         return self.cursor.fetchall()
 
-    def fetch_music_title(self):
-        SQL_COMMAND  = "SELECT Title FROM musics;"
+    def fetch_music_title(self, current_music_url):
+        SQL_COMMAND  = f"SELECT Title FROM musics where url='{current_music_url}';"
 
         self.cursor.execute(SQL_COMMAND)
 
-        return self.cursor.fetchall()
+        return self.cursor.fetchone()
+    
+    # ----------------------------------------
+    # Private Methods
+    # ----------------------------------------
+    
+    # Needs to be a private method. Don't want anyone to add to the database.
+    def __add_entry(self, music_url, music_title):
+        # video_meta_data = self.get_title_and_url_from_youtube()
+        # music_url = video_meta_data[1]
+        # music_title = video_meta_data[0]
 
+        SQL_COMMAND = f"INSERT IGNORE INTO musics(Url, Title) VALUES('{music_url}', '{music_title}');"
+
+        try:
+            self.cursor.execute(SQL_COMMAND)
+            print("-----------------")
+            print(f"Added {music_title} into the table.")
+            print(f"Added {music_url} into the table.")
+            print("-----------------")
+
+            self.conn.commit()
+        except mysql.connector.Error as err:
+            print(err.msg)
+            self.conn.rollback()
     def __drop_table(self):
         try:
             self.cursor.execute("DROP TABLE musics")
@@ -75,6 +89,13 @@ class Database:
         except mysql.connector.Error as err:
             print(err.msg)
 
+    def __add_unique_identifier_to_column(self):
+        SQL_COMMAND = "ALTER TABLE musics ADD UNIQUE INDEX(url)"
+        self.cursor.execute(SQL_COMMAND)
+
     def __exit__(self):
         if self.conn is not None and self.conn.is_connected():
+            print("=====================")
+            print("Closing connection to the databse.")
+            print("=====================")
             self.conn.close()
