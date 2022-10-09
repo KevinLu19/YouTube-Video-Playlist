@@ -36,10 +36,12 @@ class Database:
         song_title = song_meta_data[0]
         song_url = song_meta_data[1]
 
-        self.__add_entry(song_title, song_url)
+        self.__add_entry(song_url, song_title)          # This protects the add_entry() function as we dont want anyone to have access to it.
 
-    def get_title_and_url_from_youtube(self):
+    def get_title_and_url_from_youtube(self, song_name):
         youtube_obj = youtube.YouTubeSearch()
+        youtube_obj.search_song_meta_data(song_name)
+
         music_title = youtube_obj.get_music_title()
         music_url = youtube_obj.get_music_url()
 

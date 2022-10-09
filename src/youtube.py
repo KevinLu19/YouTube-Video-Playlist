@@ -5,8 +5,6 @@ class YouTubeSearch:
         self.music_url = ""
         self.music_title = ""
 
-        self.search_song_meta_data()
-
     # ----------------------------------------
     # Public Methods
     # ----------------------------------------
