@@ -84,6 +84,7 @@ class Database:
         except mysql.connector.Error as err:
             print(err.msg)
             self.conn.rollback()
+    
     def __drop_table(self):
         try:
             self.cursor.execute("DROP TABLE musics")

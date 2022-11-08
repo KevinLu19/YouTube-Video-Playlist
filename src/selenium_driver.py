@@ -25,8 +25,13 @@ class SeleniumDriver:
     def play_song(self):
         music_url = self.playlist_class.dequeue_music_url()
         self.driver.get(music_url)
+        self.create_new_tab()
         # print(self.playlist_class.dequeue_music_title())
         # self.driver.get("https://www.youtube.com/watch?v=wXhTHyIgQ_U")
+
+    def create_new_tab(self):
+        body = self.driver.find_element(By.TAG_NAME, "body")
+        body.send_keys(Keys.CONTROL + "t")
 
     def __exit__(self):
         self.driver.quit()
